@@ -1,39 +1,138 @@
-async function unlockTools() {
-  const password = document.getElementById('passwordInput').value;
-  const webAppUrl = 'AQUÍ_PEGA_LA_URL_DE_TU_WEB_APP_DE_APPS_SCRIPT';
-  
-  try {
-    const response = await fetch(webAppUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain' // Evita que el navegador lance un error de pre-flight CORS
-      },
-      body: JSON.stringify({ password: password })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      document.getElementById('loginContainer').style.display = 'none';
-      renderTools(result.tools); // Función que crees para listar e incrustar los HTMLs
-    } else {
-      alert('Contraseña incorrecta');
-    }
-  } catch (error) {
-    console.error('Error de conexión:', error);
-  }
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Herramientas Privadas</title>
+    <style>
+        /* Estilos generales */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Pantalla de Login */
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; color: white; }
+        .login-box { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
+        input[type="password"] { padding: 10px; width: 200px; border: none; border-radius: 5px; margin-bottom: 15px; outline: none; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; background: #3498db; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #2980b9; }
+        #error-msg { color: #e74c3c; margin-top: 10px; font-size: 14px; }
 
-function renderTools(toolsList) {
-  const container = document.getElementById('toolsContainer');
-  toolsList.forEach(tool => {
-    // Puedes crear botones para cargar cada herramienta, o usar un iframe dinámico:
-    let btn = document.createElement('button');
-    btn.innerText = tool.name;
-    btn.onclick = () => {
-      let iframe = document.getElementById('toolViewer');
-      iframe.srcdoc = tool.content; // Carga el código HTML directamente de forma segura
-    };
-    container.appendChild(btn);
-  });
-}
+        /* Panel Principal (Oculto al inicio) */
+        #dashboard { display: none; height: 100vh; }
+        
+        /* Menú lateral */
+        #sidebar { width: 250px; background: #2c3e50; color: white; padding: 20px; overflow-y: auto; }
+        #sidebar h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid #34495e; padding-bottom: 10px; }
+        .tool-btn { display: block; width: 100%; text-align: left; background: none; color: #ecf0f1; border: none; padding: 10px; margin-bottom: 5px; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .tool-btn:hover, .tool-btn.active { background: #34495e; }
+        
+        /* Contenedor de la herramienta (iframe) */
+        #content-area { flex-grow: 1; display: flex; flex-direction: column; }
+        iframe { flex-grow: 1; border: none; width: 100%; background: white; }
+        .header { background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .header h3 { margin: 0; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Contraseña -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Acceso a Herramientas</h2>
+            <input type="password" id="password" placeholder="Ingresa la contraseña" onkeypress="if(event.key === 'Enter') unlock()">
+            <br>
+            <button onclick="unlock()" id="btn-login">Desbloquear</button>
+            <div id="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Panel de Herramientas -->
+    <div id="dashboard">
+        <div id="sidebar">
+            <h2>Mis Herramientas</h2>
+            <div id="tools-list">
+                <!-- Los botones se generarán aquí -->
+            </div>
+        </div>
+        <div id="content-area">
+            <div class="header">
+                <h3 id="current-tool-title">Selecciona una herramienta</h3>
+                <button onclick="location.reload()" style="background: #e74c3c;">Cerrar Sesión</button>
+            </div>
+            <iframe id="tool-viewer"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // --- PEGA AQUÍ LA URL DE TU WEB APP DE GOOGLE APPS SCRIPT ---
+        const WEB_APP_URL = "URL_DE_TU_WEB_APP_AQUI";
+
+        async function unlock() {
+            const passInput = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const btn = document.getElementById('btn-login');
+            
+            if(!passInput) return;
+
+            btn.innerText = "Verificando...";
+            errorMsg.innerText = "";
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({ password: passInput })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'flex';
+                    renderTools(result.tools);
+                } else {
+                    errorMsg.innerText = result.error || "Contraseña incorrecta";
+                    btn.innerText = "Desbloquear";
+                }
+            } catch (error) {
+                errorMsg.innerText = "Error de conexión. Revisa la URL.";
+                btn.innerText = "Desbloquear";
+                console.error(error);
+            }
+        }
+
+        function renderTools(tools) {
+            const list = document.getElementById('tools-list');
+            const viewer = document.getElementById('tool-viewer');
+            const title = document.getElementById('current-tool-title');
+            
+            list.innerHTML = ""; // Limpiar lista
+
+            if(tools.length === 0) {
+                list.innerHTML = "<p style='font-size:12px; color:#bdc3c7;'>No hay archivos .html en la carpeta.</p>";
+                return;
+            }
+
+            tools.forEach((tool, index) => {
+                let btn = document.createElement('button');
+                btn.className = "tool-btn";
+                btn.innerText = tool.name;
+                
+                btn.onclick = function() {
+                    // Quitar clase active a todos
+                    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Cargar contenido en el iframe
+                    title.innerText = tool.name;
+                    viewer.srcdoc = tool.content;
+                };
+                
+                list.appendChild(btn);
+
+                // Autocargar la primera herramienta de la lista
+                if(index === 0) btn.click();
+            });
+        }
+    </script>
+</body>
+</html>
