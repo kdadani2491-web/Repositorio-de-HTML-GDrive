@@ -6,31 +6,52 @@
     <title>Mis Herramientas Privadas</title>
     <style>
         /* Estilos generales */
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; height: 100vh; display: flex; flex-direction: column; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
         /* Pantalla de Login */
         #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; color: white; }
         .login-box { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
         input[type="password"] { padding: 10px; width: 200px; border: none; border-radius: 5px; margin-bottom: 15px; outline: none; font-size: 16px; text-align: center; letter-spacing: 2px; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; background: #3498db; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
-        button:hover { background: #2980b9; }
+        .btn-primary { padding: 10px 20px; border: none; border-radius: 5px; background: #3498db; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        .btn-primary:hover { background: #2980b9; }
         #error-msg { color: #e74c3c; margin-top: 10px; font-size: 14px; min-height: 20px; }
 
-        /* Panel Principal (Oculto al inicio) */
-        #dashboard { display: none; height: 100vh; }
+        /* Panel Principal */
+        #dashboard { display: none; height: 100vh; width: 100vw; }
         
         /* Menú lateral */
-        #sidebar { width: 250px; background: #2c3e50; color: white; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
+        #sidebar { 
+            width: 280px; min-width: 280px; background: #2c3e50; color: white; padding: 20px; 
+            overflow-y: auto; display: flex; flex-direction: column; box-sizing: border-box;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #sidebar.collapsed { margin-left: -280px; } /* Oculta el menú desplazándolo a la izquierda */
+        
         #sidebar h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid #34495e; padding-bottom: 10px; margin-bottom: 15px; }
-        .tool-btn { display: block; width: 100%; text-align: left; background: none; color: #ecf0f1; border: none; padding: 12px; margin-bottom: 5px; border-radius: 5px; cursor: pointer; transition: 0.2s; font-size: 15px; }
-        .tool-btn:hover, .tool-btn.active { background: #34495e; font-weight: bold; }
+        
+        /* Controles de Búsqueda y Orden */
+        .sidebar-controls { display: flex; gap: 8px; margin-bottom: 15px; }
+        #search-input { flex-grow: 1; padding: 8px; border: none; border-radius: 5px; background: #1a252f; color: white; outline: none; font-size: 13px; }
+        #search-input::placeholder { color: #95a5a6; }
+        #sort-btn { padding: 8px 12px; border: none; border-radius: 5px; background: #1a252f; color: #95a5a6; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
+        #sort-btn:hover { background: #34495e; color: white; }
+
+        .tool-btn { display: block; width: 100%; text-align: left; background: none; color: #ecf0f1; border: none; padding: 12px; margin-bottom: 5px; border-radius: 5px; cursor: pointer; transition: 0.2s; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tool-btn:hover, .tool-btn.active { background: #34495e; font-weight: bold; border-left: 4px solid #3498db; padding-left: 8px; }
         
         /* Contenedor de la herramienta (iframe) */
-        #content-area { flex-grow: 1; display: flex; flex-direction: column; background: #ffffff; }
-        iframe { flex-grow: 1; border: none; width: 100%; background: white; }
-        .header { background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .header h3 { margin: 0; color: #2c3e50; }
-        .logout-btn { background: #e74c3c; }
+        #content-area { flex-grow: 1; display: flex; flex-direction: column; background: #121212; /* Fondo oscuro para el iframe */ width: 100%; }
+        iframe { flex-grow: 1; border: none; width: 100%; height: 100%; background: #ffffff; } /* El fondo del iframe es blanco por defecto, tu HTML interno dictará su color */
+        
+        .header { background: white; padding: 12px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header h3 { margin: 0; color: #2c3e50; font-size: 1.1rem; }
+        
+        /* Botón de ocultar barra (Toggle) */
+        .toggle-btn { background: none; border: none; color: #7f8c8d; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .toggle-btn:hover { color: #2c3e50; transform: scale(1.1); }
+        
+        .logout-btn { background: #e74c3c; padding: 8px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; font-size: 13px; }
         .logout-btn:hover { background: #c0392b; }
         
         /* Animación de carga */
@@ -40,39 +61,48 @@
 </head>
 <body>
 
-    <!-- Pantalla de Contraseña -->
     <div id="login-screen">
         <div class="login-box">
             <h2>Acceso a Herramientas</h2>
             <div id="loading-spinner" class="loader"></div>
             <input type="password" id="password" placeholder="Contraseña" onkeypress="if(event.key === 'Enter') unlock()">
             <br>
-            <button onclick="unlock()" id="btn-login">Desbloquear</button>
+            <button class="btn-primary" onclick="unlock()" id="btn-login">Desbloquear</button>
             <div id="error-msg"></div>
         </div>
     </div>
 
-    <!-- Panel de Herramientas -->
     <div id="dashboard">
         <div id="sidebar">
             <h2>Mis Herramientas</h2>
-            <div id="tools-list">
-                <!-- Los botones se generarán aquí mágicamente -->
+            
+            <div class="sidebar-controls">
+                <input type="text" id="search-input" placeholder="Buscar..." oninput="filterAndSortTools(false)">
+                <button id="sort-btn" onclick="toggleSort()" title="Ordenar alfabéticamente">A-Z ↓</button>
             </div>
+
+            <div id="tools-list">
+                </div>
         </div>
+        
         <div id="content-area">
             <div class="header">
-                <h3 id="current-tool-title">Selecciona una herramienta</h3>
+                <div class="header-left">
+                    <button class="toggle-btn" id="toggle-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar menú">❮</button>
+                    <h3 id="current-tool-title">Selecciona una herramienta</h3>
+                </div>
                 <button class="logout-btn" onclick="location.reload()">Cerrar Sesión</button>
             </div>
-            <!-- Aquí se inyectará el código HTML de tu herramienta -->
             <iframe id="tool-viewer"></iframe>
         </div>
     </div>
 
     <script>
-        // Tu URL de Google Apps Script ya integrada
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw4dFtd4xGLCLdrdrc5xl6JSNMcpTrd9DCHql47e_QtsmLjs746zrrHNjNyDExHH79Z/exec";
+
+        // Variables globales para mantener el estado de las herramientas
+        let globalTools = [];
+        let isSortAscending = true;
 
         async function unlock() {
             const passInput = document.getElementById('password').value;
@@ -82,13 +112,11 @@
             
             if(!passInput) return;
 
-            // UI de carga
             btn.style.display = "none";
             spinner.style.display = "block";
             errorMsg.innerText = "";
 
             try {
-                // Hacemos la petición a tu Google Script
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
@@ -98,12 +126,14 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // Si es exitoso, ocultamos login y mostramos el dashboard
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'flex';
-                    renderTools(result.tools);
+                    
+                    // Guardamos las herramientas y aplicamos los filtros/orden por defecto
+                    globalTools = result.tools;
+                    filterAndSortTools(true); // true = auto-seleccionar la primera herramienta
+
                 } else {
-                    // Si falla la clave
                     errorMsg.innerText = result.error || "Contraseña incorrecta";
                     btn.style.display = "inline-block";
                     spinner.style.display = "none";
@@ -116,41 +146,84 @@
             }
         }
 
-        function renderTools(tools) {
+        // Función para cambiar la dirección del ordenamiento
+        function toggleSort() {
+            isSortAscending = !isSortAscending;
+            const sortBtn = document.getElementById('sort-btn');
+            sortBtn.innerText = isSortAscending ? "A-Z ↓" : "Z-A ↑";
+            filterAndSortTools(false);
+        }
+
+        // Función central para buscar y ordenar
+        function filterAndSortTools(autoClickFirst) {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            
+            // 1. Filtrar
+            let filteredTools = globalTools.filter(tool => tool.name.toLowerCase().includes(searchQuery));
+            
+            // 2. Ordenar
+            filteredTools.sort((a, b) => {
+                let nameA = a.name.toLowerCase();
+                let nameB = b.name.toLowerCase();
+                if (nameA < nameB) return isSortAscending ? -1 : 1;
+                if (nameA > nameB) return isSortAscending ? 1 : -1;
+                return 0;
+            });
+
+            // 3. Renderizar en pantalla
+            renderToolsList(filteredTools, autoClickFirst);
+        }
+
+        // Construir la lista de botones en el menú lateral
+        function renderToolsList(toolsToRender, autoClickFirst) {
             const list = document.getElementById('tools-list');
             const viewer = document.getElementById('tool-viewer');
             const title = document.getElementById('current-tool-title');
             
-            list.innerHTML = ""; // Limpiar lista por si acaso
+            list.innerHTML = ""; 
 
-            if(tools.length === 0) {
-                list.innerHTML = "<p style='font-size:14px; color:#bdc3c7; text-align:center; margin-top:20px;'>Tu carpeta de Drive está vacía o no tiene archivos .html</p>";
+            if(toolsToRender.length === 0) {
+                list.innerHTML = "<p style='font-size:13px; color:#95a5a6; text-align:center; margin-top:20px;'>No se encontraron resultados.</p>";
                 return;
             }
 
-            // Crear un botón por cada herramienta encontrada
-            tools.forEach((tool, index) => {
+            toolsToRender.forEach((tool, index) => {
                 let btn = document.createElement('button');
                 btn.className = "tool-btn";
-                btn.innerText = tool.name;
+                // Agregamos un emoji para que mantenga el estilo visual de tus títulos
+                btn.innerText = "📄 " + tool.name; 
                 
                 btn.onclick = function() {
-                    // Marcar visualmente el botón seleccionado
                     document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    // Cambiar el título superior
                     title.innerText = tool.name;
-                    
-                    // Inyectar el código HTML de forma segura en el iframe
                     viewer.srcdoc = tool.content;
                 };
                 
                 list.appendChild(btn);
 
-                // Cargar automáticamente la primera herramienta de la lista
-                if(index === 0) btn.click();
+                // Auto cargar la primera herramienta al iniciar
+                if(autoClickFirst && index === 0) {
+                    btn.click();
+                }
             });
+        }
+
+        // Lógica para ocultar/mostrar la barra lateral
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggle-sidebar');
+            
+            sidebar.classList.toggle('collapsed');
+            
+            // Cambiar la dirección de la flecha dependiendo del estado
+            if (sidebar.classList.contains('collapsed')) {
+                toggleBtn.innerHTML = "❯"; // Flecha a la derecha
+                toggleBtn.title = "Mostrar menú";
+            } else {
+                toggleBtn.innerHTML = "❮"; // Flecha a la izquierda
+                toggleBtn.title = "Ocultar menú";
+            }
         }
     </script>
 </body>
