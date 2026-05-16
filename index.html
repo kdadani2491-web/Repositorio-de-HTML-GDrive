@@ -9,61 +9,86 @@
         body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
         /* Pantalla de Login */
-        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; color: white; }
-        .login-box { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
-        input[type="password"] { padding: 10px; width: 200px; border: none; border-radius: 5px; margin-bottom: 15px; outline: none; font-size: 16px; text-align: center; letter-spacing: 2px; }
-        .btn-primary { padding: 10px 20px; border: none; border-radius: 5px; background: #3498db; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; color: white; padding: 20px; box-sizing: border-box; }
+        .login-box { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px); width: 100%; max-width: 350px; }
+        input[type="password"] { padding: 12px; width: 100%; box-sizing: border-box; border: none; border-radius: 5px; margin-bottom: 15px; outline: none; font-size: 16px; text-align: center; letter-spacing: 2px; }
+        .btn-primary { padding: 12px 20px; width: 100%; border: none; border-radius: 5px; background: #3498db; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 15px; }
         .btn-primary:hover { background: #2980b9; }
-        #error-msg { color: #e74c3c; margin-top: 10px; font-size: 14px; min-height: 20px; }
+        #error-msg { color: #e74c3c; margin-top: 10px; font-size: 14px; min-height: 20px; font-weight: bold; }
 
         /* Panel Principal */
-        #dashboard { display: none; height: 100vh; width: 100vw; }
+        #dashboard { display: none; height: 100vh; width: 100vw; position: relative; }
         
-        /* Menú lateral */
+        /* Menú lateral (Desktop por defecto) */
         #sidebar { 
             width: 280px; min-width: 280px; background: #2c3e50; color: white; padding: 20px; 
             overflow-y: auto; display: flex; flex-direction: column; box-sizing: border-box;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
         }
-        #sidebar.collapsed { margin-left: -280px; } /* Oculta el menú desplazándolo a la izquierda */
+        #sidebar.collapsed { margin-left: -280px; } 
         
         #sidebar h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid #34495e; padding-bottom: 10px; margin-bottom: 15px; }
         
         /* Controles de Búsqueda y Orden */
         .sidebar-controls { display: flex; gap: 8px; margin-bottom: 15px; }
-        #search-input { flex-grow: 1; padding: 8px; border: none; border-radius: 5px; background: #1a252f; color: white; outline: none; font-size: 13px; }
+        #search-input { flex-grow: 1; padding: 10px; border: none; border-radius: 5px; background: #1a252f; color: white; outline: none; font-size: 14px; }
         #search-input::placeholder { color: #95a5a6; }
-        #sort-btn { padding: 8px 12px; border: none; border-radius: 5px; background: #1a252f; color: #95a5a6; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
+        #sort-btn { padding: 10px 12px; border: none; border-radius: 5px; background: #1a252f; color: #95a5a6; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
         #sort-btn:hover { background: #34495e; color: white; }
 
         .tool-btn { display: block; width: 100%; text-align: left; background: none; color: #ecf0f1; border: none; padding: 12px; margin-bottom: 5px; border-radius: 5px; cursor: pointer; transition: 0.2s; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tool-btn:hover, .tool-btn.active { background: #34495e; font-weight: bold; border-left: 4px solid #3498db; padding-left: 8px; }
         
         /* Contenedor de la herramienta (iframe) */
-        #content-area { flex-grow: 1; display: flex; flex-direction: column; background: #121212; /* Fondo oscuro para el iframe */ width: 100%; }
-        iframe { flex-grow: 1; border: none; width: 100%; height: 100%; background: #ffffff; } /* El fondo del iframe es blanco por defecto, tu HTML interno dictará su color */
+        #content-area { flex-grow: 1; display: flex; flex-direction: column; background: #121212; width: 100%; min-width: 0; }
+        iframe { flex-grow: 1; border: none; width: 100%; height: 100%; background: #ffffff; } 
         
-        .header { background: white; padding: 12px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header h3 { margin: 0; color: #2c3e50; font-size: 1.1rem; }
+        /* Cabecera (Header) */
+        .header { background: white; padding: 12px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 10; box-sizing: border-box; width: 100%; }
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .header h3 { margin: 0; color: #2c3e50; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         /* Botón de ocultar barra (Toggle) */
-        .toggle-btn { background: none; border: none; color: #7f8c8d; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .toggle-btn:hover { color: #2c3e50; transform: scale(1.1); }
+        .toggle-btn { background: none; border: none; color: #7f8c8d; font-size: 22px; cursor: pointer; padding: 0 5px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .toggle-btn:hover { color: #2c3e50; }
         
-        .logout-btn { background: #e74c3c; padding: 8px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .logout-btn { background: #e74c3c; padding: 8px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
         .logout-btn:hover { background: #c0392b; }
         
         /* Animación de carga */
-        .loader { display: none; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        .loader { display: none; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Capa oscura para el menú en móvil */
+        #mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 90; backdrop-filter: blur(2px); }
+
+        /* =========================================
+           DISEÑO RESPONSIVE PARA MÓVILES (ej. Xiaomi)
+           ========================================= */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed; /* Flota sobre el contenido */
+                height: 100%;
+                top: 0;
+                left: -280px; /* Oculto por defecto a la izquierda */
+                margin-left: 0 !important; /* Anula el margin-left de escritorio */
+            }
+            #sidebar.mobile-open { left: 0; box-shadow: 2px 0 15px rgba(0,0,0,0.5); }
+            #mobile-overlay.active { display: block; }
+            
+            /* Ajustes finos de tamaño para celular */
+            .header h3 { font-size: 1rem; }
+            .logout-btn { font-size: 12px; padding: 6px 10px; }
+            .toggle-btn { font-size: 24px; color: #2c3e50; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <h2>Acceso a Herramientas</h2>
+            <h2>Acceso Privado</h2>
             <div id="loading-spinner" class="loader"></div>
             <input type="password" id="password" placeholder="Contraseña" onkeypress="if(event.key === 'Enter') unlock()">
             <br>
@@ -73,6 +98,9 @@
     </div>
 
     <div id="dashboard">
+        
+        <div id="mobile-overlay" onclick="toggleSidebar()"></div>
+
         <div id="sidebar">
             <h2>Mis Herramientas</h2>
             
@@ -88,8 +116,8 @@
         <div id="content-area">
             <div class="header">
                 <div class="header-left">
-                    <button class="toggle-btn" id="toggle-sidebar" onclick="toggleSidebar()" title="Ocultar/Mostrar menú">❮</button>
-                    <h3 id="current-tool-title">Selecciona una herramienta</h3>
+                    <button class="toggle-btn" id="toggle-sidebar" onclick="toggleSidebar()" title="Menú"></button>
+                    <h3 id="current-tool-title">Cargando...</h3>
                 </div>
                 <button class="logout-btn" onclick="location.reload()">Cerrar Sesión</button>
             </div>
@@ -100,9 +128,22 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw4dFtd4xGLCLdrdrc5xl6JSNMcpTrd9DCHql47e_QtsmLjs746zrrHNjNyDExHH79Z/exec";
 
-        // Variables globales para mantener el estado de las herramientas
         let globalTools = [];
         let isSortAscending = true;
+
+        // Configurar el ícono del botón al cargar y al cambiar el tamaño de la ventana
+        function updateToggleIcon() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggle-sidebar');
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                toggleBtn.innerHTML = "☰"; // Ícono de hamburguesa en celular
+            } else {
+                toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? "❯" : "❮"; // Flechas en PC
+            }
+        }
+        window.addEventListener('resize', updateToggleIcon);
 
         async function unlock() {
             const passInput = document.getElementById('password').value;
@@ -129,24 +170,23 @@
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'flex';
                     
-                    // Guardamos las herramientas y aplicamos los filtros/orden por defecto
+                    updateToggleIcon(); // Inicializar el ícono correcto
                     globalTools = result.tools;
-                    filterAndSortTools(true); // true = auto-seleccionar la primera herramienta
+                    filterAndSortTools(true); 
 
                 } else {
                     errorMsg.innerText = result.error || "Contraseña incorrecta";
-                    btn.style.display = "inline-block";
+                    btn.style.display = "block";
                     spinner.style.display = "none";
                 }
             } catch (error) {
-                errorMsg.innerText = "Error de conexión. Revisa la consola.";
-                btn.style.display = "inline-block";
+                errorMsg.innerText = "Error de conexión. Revisa tu internet.";
+                btn.style.display = "block";
                 spinner.style.display = "none";
                 console.error(error);
             }
         }
 
-        // Función para cambiar la dirección del ordenamiento
         function toggleSort() {
             isSortAscending = !isSortAscending;
             const sortBtn = document.getElementById('sort-btn');
@@ -154,14 +194,11 @@
             filterAndSortTools(false);
         }
 
-        // Función central para buscar y ordenar
         function filterAndSortTools(autoClickFirst) {
             const searchQuery = document.getElementById('search-input').value.toLowerCase();
             
-            // 1. Filtrar
             let filteredTools = globalTools.filter(tool => tool.name.toLowerCase().includes(searchQuery));
             
-            // 2. Ordenar
             filteredTools.sort((a, b) => {
                 let nameA = a.name.toLowerCase();
                 let nameB = b.name.toLowerCase();
@@ -170,11 +207,9 @@
                 return 0;
             });
 
-            // 3. Renderizar en pantalla
             renderToolsList(filteredTools, autoClickFirst);
         }
 
-        // Construir la lista de botones en el menú lateral
         function renderToolsList(toolsToRender, autoClickFirst) {
             const list = document.getElementById('tools-list');
             const viewer = document.getElementById('tool-viewer');
@@ -184,13 +219,14 @@
 
             if(toolsToRender.length === 0) {
                 list.innerHTML = "<p style='font-size:13px; color:#95a5a6; text-align:center; margin-top:20px;'>No se encontraron resultados.</p>";
+                title.innerText = "Sin resultados";
+                viewer.srcdoc = "";
                 return;
             }
 
             toolsToRender.forEach((tool, index) => {
                 let btn = document.createElement('button');
                 btn.className = "tool-btn";
-                // Agregamos un emoji para que mantenga el estilo visual de tus títulos
                 btn.innerText = "📄 " + tool.name; 
                 
                 btn.onclick = function() {
@@ -198,32 +234,33 @@
                     this.classList.add('active');
                     title.innerText = tool.name;
                     viewer.srcdoc = tool.content;
+
+                    // Si estamos en celular, cerramos el menú automáticamente al hacer clic en una herramienta
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
                 };
                 
                 list.appendChild(btn);
 
-                // Auto cargar la primera herramienta al iniciar
                 if(autoClickFirst && index === 0) {
                     btn.click();
                 }
             });
         }
 
-        // Lógica para ocultar/mostrar la barra lateral
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const toggleBtn = document.getElementById('toggle-sidebar');
-            
-            sidebar.classList.toggle('collapsed');
-            
-            // Cambiar la dirección de la flecha dependiendo del estado
-            if (sidebar.classList.contains('collapsed')) {
-                toggleBtn.innerHTML = "❯"; // Flecha a la derecha
-                toggleBtn.title = "Mostrar menú";
+            const overlay = document.getElementById('mobile-overlay');
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
             } else {
-                toggleBtn.innerHTML = "❮"; // Flecha a la izquierda
-                toggleBtn.title = "Ocultar menú";
+                sidebar.classList.toggle('collapsed');
             }
+            updateToggleIcon();
         }
     </script>
 </body>
