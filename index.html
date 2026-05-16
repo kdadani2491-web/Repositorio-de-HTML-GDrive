@@ -1,0 +1,39 @@
+async function unlockTools() {
+  const password = document.getElementById('passwordInput').value;
+  const webAppUrl = 'AQUÍ_PEGA_LA_URL_DE_TU_WEB_APP_DE_APPS_SCRIPT';
+  
+  try {
+    const response = await fetch(webAppUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain' // Evita que el navegador lance un error de pre-flight CORS
+      },
+      body: JSON.stringify({ password: password })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      document.getElementById('loginContainer').style.display = 'none';
+      renderTools(result.tools); // Función que crees para listar e incrustar los HTMLs
+    } else {
+      alert('Contraseña incorrecta');
+    }
+  } catch (error) {
+    console.error('Error de conexión:', error);
+  }
+}
+
+function renderTools(toolsList) {
+  const container = document.getElementById('toolsContainer');
+  toolsList.forEach(tool => {
+    // Puedes crear botones para cargar cada herramienta, o usar un iframe dinámico:
+    let btn = document.createElement('button');
+    btn.innerText = tool.name;
+    btn.onclick = () => {
+      let iframe = document.getElementById('toolViewer');
+      iframe.srcdoc = tool.content; // Carga el código HTML directamente de forma segura
+    };
+    container.appendChild(btn);
+  });
+}
